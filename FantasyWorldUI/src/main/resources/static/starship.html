@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fantasy World</title>
+</head>
+<body>
+<ul id="navbar-toggle-button">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="person.html">Person</a></li>
+    <li><a href="planet.html">Planet</a></li>
+    <li><a href="starship.html">Starship</a></li>
+</ul>
+<br>
+<div>
+    <h1>Starship</h1>
+
+    <label for="starship_id">Id</label>
+    <input type="number" id="starship_id" min="1" max="100">
+    <br>
+    <label for="starship_name">Name</label>
+    <input type="text" id="starship_name">
+    <br>
+    <label for="starship_model">Model</label>
+    <input type="text" id="starship_model">
+    <br>
+    <button onclick="createEntry()" id="starship_button_add">Add</button>
+    <button onclick="updateEntry()" id="starship_button_update">Update</button>
+
+    <br /><br />id: &nbsp;<input type="number" style="width:50px;" id="find_id" min="1" max="100">
+    <button onclick="findEntry()" id="starship_button_find">Find</button>
+    <button onclick="deleteEntry()" id="starship_button_delete">Delete</button>
+
+</div>
+<div>
+    <h1>Current Entries</h1>
+    <ul id="entry_list"></ul>
+</div>
+</body>
+<script>
+    function createEntry() {
+        let id = document.getElementById("starship_id").value;
+        let name = document.getElementById("starship_name").value;
+        let model = document.getElementById("starship_model").value;
+        let entry = {"id": id, "name": name, "modelType": model};
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/starship", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry created");
+                getEntries();
+            } else {
+                console.log("Error creating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function updateEntry() {
+        let id = document.getElementById("starship_id").value;
+        let name = document.getElementById("starship_name").value;
+        let model = document.getElementById("starship_model").value;
+        let entry = {"id": id, "name": name, "modelType": model};
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://localhost:8080/starship/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry updated");
+                getEntries();
+            } else {
+                console.log("Error updating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function findEntry() {
+        console.log("findEntry method called");
+        let id = document.getElementById("find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/starship/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry found");
+                let entry = JSON.parse(this.responseText);
+                document.getElementById("starship_id").value = entry.id;
+                document.getElementById("starship_name").value = entry.name;
+                document.getElementById("starship_model").value = entry.modelType;
+            } else {
+                console.log("Error finding entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function deleteEntry () {
+        let id = document.getElementById("find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "http://localhost:8080/starship/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry deleted");
+                getEntries();
+            } else {
+                console.log("Error deleting entry");
+            }
+        }
+    }
+
+    function getEntries() {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/starship", true);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                let entries = JSON.parse(xhr.responseText);
+                renderEntries(entries);
+            } else {
+                console.log("Error getting entries");
+                //having issues here.
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function renderEntries(entries) {
+        let entry_list = document.getElementById("entry_list");
+        entry_list.innerHTML = "";
+        for (let entry of entries) {
+            let li = document.createElement("li");
+            li.innerHTML = "ID:" + entry.id + " Name: " + entry.name + " Model: " + entry.modelType;
+            entry_list.appendChild(li);
+        }
+    }
+
+    window.onload = function () {
+        //fixe the issue of the UL styling
+        getEntries();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+</script>
+<style>
+    #navbar-toggle-button {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+    }
+
+    #navbar-toggle-button li {
+        float: left;
+    }
+
+    #navbar-toggle-button li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    #navbar-toggle-button li a:hover {
+        background-color: #111;
+    }
+</style>
+</html>
