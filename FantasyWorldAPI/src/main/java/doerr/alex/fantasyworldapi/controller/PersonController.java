@@ -14,29 +14,30 @@ public class PersonController {
 
     @RequestMapping(path="", method= RequestMethod.POST)
     public void createPerson(@RequestBody Person person) {
-        pb.add(person);
+        pb.createPerson(person);
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.PUT)
     public void updatePerson(@RequestBody Person person) {
-        pb.update(person);
+        pb.updatePerson(person);
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.GET)
     public Person findPersonById(@PathVariable int id) {
         System.out.println("findPersonById");
-        return pb.findById(id);
+        return pb.findPerson(id);
     }
 
     @RequestMapping(path="", method=RequestMethod.GET)
     public List<Person> findAllPeople() {
         System.out.printf("findAllPeople");
-        return pb.findAll();
+//        return pb.findAll();
+        return pb.selectPeople();
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.DELETE)
     public void deletePersonById(@PathVariable int id) {
-        pb.delete(id);
+        pb.deletePerson(id);
     }
 
 

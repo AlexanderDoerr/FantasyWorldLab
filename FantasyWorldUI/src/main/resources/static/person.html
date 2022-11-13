@@ -14,10 +14,6 @@
 <br>
 <div>
     <h1>Person</h1>
-
-    <label for="person_id">Id</label>
-    <input type="number" id="person_id" min="1" max="100">
-    <br>
     <label for="person_name">Name</label>
     <input type="text" id="person_name">
     <br>
@@ -39,10 +35,10 @@
 </body>
 <script>
     function createEntry() {
-        let id = document.getElementById("person_id").value;
+        // let id = document.getElementById("person_id").value;
         let name = document.getElementById("person_name").value;
         let rank = document.getElementById("person_rank").value;
-        let entry = {"id": id, "name": name, "rank": rank};
+        let entry = {"name": name, "rank": rank};
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:8080/person", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -60,7 +56,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     function updateEntry() {
-        let id = document.getElementById("person_id").value;
+        let id = document.getElementById("find_id").value;
         let name = document.getElementById("person_name").value;
         let rank = document.getElementById("person_rank").value;
         let entry = {"id": id, "name": name, "rank": rank};
@@ -91,7 +87,8 @@
             if (xhr.status === 200) {
                 console.log("Entry found");
                 let entry = JSON.parse(this.responseText);
-                document.getElementById("person_id").value = entry.id;
+                console.log("This is the entry: " + entry.id + " " + entry.name + " " + entry.rank);
+                // document.getElementById("person_id").value = entry.id;
                 document.getElementById("person_name").value = entry.name;
                 document.getElementById("person_rank").value = entry.rank;
             } else {

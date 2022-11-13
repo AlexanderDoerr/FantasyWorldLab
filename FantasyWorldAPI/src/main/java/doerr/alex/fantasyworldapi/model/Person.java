@@ -10,6 +10,10 @@ public class Person {
         setName(name);
         setRank(rank);
     }
+    public Person(String name, String rank){
+        setName(name);
+        setRank(rank);
+    }
 
     public Person(){
 

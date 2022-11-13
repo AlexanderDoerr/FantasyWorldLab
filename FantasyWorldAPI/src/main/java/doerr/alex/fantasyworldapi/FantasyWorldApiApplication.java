@@ -17,6 +17,7 @@ public class FantasyWorldApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(FantasyWorldApiApplication.class, args);
+//        PersonBLL.createPerson(new Person("Larry", "Joker"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer()

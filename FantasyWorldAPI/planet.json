@@ -2,4 +2,8 @@
   "name" : "Earth",
   "climate" : "Best",
   "id" : 1
+}, {
+  "name" : "fdds",
+  "climate" : "dfsa",
+  "id" : 2
 } ]
