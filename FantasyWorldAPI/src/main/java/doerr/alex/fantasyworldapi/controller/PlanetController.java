@@ -14,29 +14,29 @@ public class PlanetController {
 
     @RequestMapping(path="", method=RequestMethod.POST)
     public void createPlanet(@RequestBody Planet planet) {
-        pb.add(planet);
+        pb.createPlanet(planet);
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.PUT)
     public void updatePlanet(@RequestBody Planet planet) {
-        pb.update(planet);
+        pb.updatePlanet(planet);
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.GET)
     public Planet findPlanetById(@PathVariable int id) {
         System.out.println("findPlanetById");
-        return pb.findById(id);
+        return pb.findPlanet(id);
     }
 
     @RequestMapping(path="", method=RequestMethod.GET)
     public List<Planet> findAllPlanets() {
         System.out.printf("findAllPlanets");
-        return pb.findAll();
+        return pb.selectPlanet();
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.DELETE)
     public void deletePlanetById(@PathVariable int id) {
-        pb.delete(id);
+        pb.deletePlanet(id);
     }
 
 

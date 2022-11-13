@@ -14,29 +14,29 @@ public class StarshipController {
 
     @RequestMapping(path="", method=RequestMethod.POST)
     public void createStarship(@RequestBody Starship starship) {
-        sb.add(starship);
+        sb.createStarship(starship);
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.PUT)
     public void updateStarship(@RequestBody Starship starship) {
-        sb.update(starship);
+        sb.updateStarship(starship);
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.GET)
     public Starship findStarshipById(@PathVariable int id) {
         System.out.println("findStarshipById");
-        return sb.findById(id);
+        return sb.findStarship(id);
     }
 
     @RequestMapping(path="", method=RequestMethod.GET)
     public List<Starship> findAllStarships() {
         System.out.println("findAllStarships");
-        return sb.findAll();
+        return sb.selectStarships();
     }
 
     @RequestMapping(path="/{id}", method=RequestMethod.DELETE)
     public void deleteStarshipById(@PathVariable int id) {
-        sb.delete(id);
+        sb.deleteStarship(id);
     }
 
 }

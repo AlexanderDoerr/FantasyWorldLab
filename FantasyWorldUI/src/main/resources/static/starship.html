@@ -14,10 +14,6 @@
 <br>
 <div>
     <h1>Starship</h1>
-
-    <label for="starship_id">Id</label>
-    <input type="number" id="starship_id" min="1" max="100">
-    <br>
     <label for="starship_name">Name</label>
     <input type="text" id="starship_name">
     <br>
@@ -39,10 +35,9 @@
 </body>
 <script>
     function createEntry() {
-        let id = document.getElementById("starship_id").value;
         let name = document.getElementById("starship_name").value;
         let model = document.getElementById("starship_model").value;
-        let entry = {"id": id, "name": name, "modelType": model};
+        let entry = {"name": name, "modelType": model};
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:8080/starship", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -60,7 +55,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     function updateEntry() {
-        let id = document.getElementById("starship_id").value;
+        let id = document.getElementById("find_id").value;
         let name = document.getElementById("starship_name").value;
         let model = document.getElementById("starship_model").value;
         let entry = {"id": id, "name": name, "modelType": model};
@@ -91,7 +86,6 @@
             if (xhr.status === 200) {
                 console.log("Entry found");
                 let entry = JSON.parse(this.responseText);
-                document.getElementById("starship_id").value = entry.id;
                 document.getElementById("starship_name").value = entry.name;
                 document.getElementById("starship_model").value = entry.modelType;
             } else {
@@ -128,7 +122,6 @@
                 renderEntries(entries);
             } else {
                 console.log("Error getting entries");
-                //having issues here.
             }
         }
     }
@@ -140,7 +133,7 @@
         entry_list.innerHTML = "";
         for (let entry of entries) {
             let li = document.createElement("li");
-            li.innerHTML = "ID:" + entry.id + " Name: " + entry.name + " Model: " + entry.modelType;
+            li.innerHTML = entry.id + " " + entry.name + " " + entry.modelType;
             entry_list.appendChild(li);
         }
     }

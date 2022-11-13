@@ -14,10 +14,6 @@
 <br>
 <div>
     <h1>Planet</h1>
-
-    <label for="planet_id">Id</label>
-    <input type="number" id="planet_id" min="1" max="100">
-    <br>
     <label for="planet_name">Name</label>
     <input type="text" id="planet_name">
     <br>
@@ -39,10 +35,9 @@
 </body>
 <script>
     function createEntry() {
-        let id = document.getElementById("planet_id").value;
         let name = document.getElementById("planet_name").value;
         let climate = document.getElementById("planet_climate").value;
-        let entry = {"id": id, "name": name, "climate": climate};
+        let entry = {"name": name, "climate": climate};
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:8080/planet", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -60,7 +55,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     function updateEntry() {
-        let id = document.getElementById("planet_id").value;
+        let id = document.getElementById("find_id").value;
         let name = document.getElementById("planet_name").value;
         let climate = document.getElementById("planet_climate").value;
         let entry = {"id": id, "name": name, "climate": climate};
@@ -91,7 +86,6 @@
             if (xhr.status === 200) {
                 console.log("Entry found");
                 let entry = JSON.parse(this.responseText);
-                document.getElementById("planet_id").value = entry.id;
                 document.getElementById("planet_name").value = entry.name;
                 document.getElementById("planet_climate").value = entry.climate;
             } else {
@@ -139,7 +133,7 @@
         entry_list.innerHTML = "";
         for (let entry of entries) {
             let li = document.createElement("li");
-            li.innerHTML = "ID:" + entry.id + " Name: " + entry.name + " Climate: " + entry.climate;
+            li.innerHTML = entry.id + " " + entry.name + " " + entry.climate;
             entry_list.appendChild(li);
         }
     }

@@ -1,83 +1,110 @@
 package doerr.alex.fantasyworldapi.BLL;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import doerr.alex.fantasyworldapi.model.Person;
 import doerr.alex.fantasyworldapi.model.Planet;
 
-import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlanetBLL {
+    static String url = "jdbc:mysql://localhost:3306/fantasyworld?allowedPublicKeyRetrieval=true&useSSL=false";
 
-    private final File file = new File("planet.json");
+    static String user = "root";
+    static String password = "Test";
 
-    public void save(List<Planet> planets) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+    public void createPlanet(Planet planet) {
+        String sql = "INSERT INTO `fantasyworld`.`planet` (`name`, `climate`) VALUES (?, ?)";
+
         try {
-            writer.writeValue(file, planets);
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement pst = connection.prepareStatement(sql);
+            pst.setString(1, planet.getName());
+            pst.setString(2, planet.getClimate());
+            pst.executeUpdate();
+
+
+            System.out.println(planet.getName() + " was created");
+
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
-    public void add(Planet planet) {
-        List<Planet> planets = findAll();
-        planets.add(planet);
-        save(planets);
-    }
+    public void updatePlanet(Planet planet) {
+        String sql = "UPDATE `fantasyworld`.`planet` SET `name` = ?, `climate` = ? WHERE (`id` = ?)";
 
-    //update person
-    public void update(Planet planet) {
-        List<Planet> planets = findAll();
-        for (int i = 0; i < planets.size(); i++) {
-            if (planets.get(i).getId() == planet.getId()) {
-                planets.set(i, planet);
-                save(planets);
-                return;
-            }
-        }
-        throw new RuntimeException("Planet not found");
-    }
-
-    public Planet findById(int id) {
-        List<Planet> planets = findAll();
-        for (Planet planet : planets) {
-            if (planet.getId() == id) {
-                return planet;
-            }
-        }
-        return null;
-    }
-
-    public void delete(int id) {
-        List<Planet> planets = findAll();
-        for (Planet planet : planets) {
-            if (planet.getId() == id) {
-                planets.remove(planet);
-                save(planets);
-                return;
-            }
-        }
-        throw new RuntimeException("Planet not found");
-    }
-    public List<Planet> findAll() {
-        if (!file.exists()) {
-            return new ArrayList<>();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.findAndRegisterModules();// use this if using less common types like LocalDateTime
         try {
-            List<Planet> planets = mapper.readValue(file, new TypeReference<List<Planet>>() {
-            });
-            System.out.println(planets.toString());
-            return planets;
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement pst = connection.prepareStatement(sql);
+            pst.setString(1, planet.getName());
+            pst.setString(2, planet.getClimate());
+            pst.setInt(3, planet.getId());
+            pst.executeUpdate();
+            System.out.println(planet.getName() + " was updated");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
+
+    public List<Planet> selectPlanet() {
+        String sql = "SELECT * FROM fantasyworld.planet";
+        List<Planet> planets = new ArrayList<>();
+
+        try{
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement pst = connection.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String climate = rs.getString("climate");
+                Planet planet = new Planet(id, name, climate);
+                planets.add(planet);
+                System.out.println(rs.getInt("id") + " " + rs.getString("name") + " " + rs.getString("climate"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return planets;
+    }
+
+    public Planet findPlanet(int id) {
+        String sql = "SELECT * FROM fantasyworld.planet where id=(?)";
+        Planet planet = null;
+
+        try{
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement pst = connection.prepareStatement(sql);
+            pst.setInt(1, id);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                int personId = rs.getInt("id");
+                String name = rs.getString("name");
+                String climate = rs.getString("climate");
+                planet = new Planet(personId, name, climate);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return planet;
+
+    }
+
+    public void deletePlanet(int id) {
+        String sql = "DELETE FROM `fantasyworld`.`planet` WHERE (`id` = ?)";
+
+        try {
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement pst = connection.prepareStatement(sql);
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            System.out.println("Planet with id " + id + " was deleted");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
