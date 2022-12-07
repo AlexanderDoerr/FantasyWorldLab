@@ -1,11 +1,5 @@
 package doerr.alex.fantasyworldapi;
 
-import doerr.alex.fantasyworldapi.BLL.PersonBLL;
-import doerr.alex.fantasyworldapi.BLL.PlanetBLL;
-import doerr.alex.fantasyworldapi.BLL.StarshipBLL;
-import doerr.alex.fantasyworldapi.model.Person;
-import doerr.alex.fantasyworldapi.model.Planet;
-import doerr.alex.fantasyworldapi.model.Starship;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +25,7 @@ public class FantasyWorldApiApplication {
                 registry.addMapping("/**").allowedOrigins("http://localhost:8081").allowedMethods("*");
 
                 //This allows requests from any origin
-                //registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+//                registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
             }
         };
     }

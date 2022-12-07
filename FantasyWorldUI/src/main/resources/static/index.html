@@ -5,39 +5,666 @@
     <title>Fantasy World</title>
 </head>
 <body>
-    <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="person.html">Person</a></li>
-        <li><a href="planet.html">Planet</a></li>
-        <li><a href="starship.html">Starship</a></li>
-    </ul>
+<!--    <ul>-->
+<!--        <li><a href="index.html">Home</a></li>-->
+<!--        <li><a href="person.html">Person</a></li>-->
+<!--        <li><a href="planet.html">Planet</a></li>-->
+<!--        <li><a href="starship.html">Starship</a></li>-->
+<!--    </ul>-->
+    <br>
+    <div id="frmLogin">
+        <h3>Login:</h3>
+        <label>Username:</label>
+        <input type="text" id="username">
+        <br />
+        <label>Password:</label>
+        <input type="password" id="password">
+        <br />
+        <button type="button" onclick="login()">Login</button>
+    </div>
+
+    <div id="lblMsg"></div>
+    <br>
+    <!--********************************************************************************************************************-->
+    <div>
+        <h1>Person</h1>
+        <label for="person_name">Name</label>
+        <input type="text" id="person_name">
+        <br>
+        <label for="person_rank">Rank</label>
+        <input type="text" id="person_rank">
+        <br>
+        <button onclick="createPersonEntry()" id="person_button_add">Add</button>
+        <button onclick="updatePersonEntry()" id="person_button_update">Update</button>
+
+        <br /><br />id: &nbsp;<input type="number" style="width:50px;" id="person_find_id" min="1" max="100">
+        <button onclick="findPersonEntry()" id="person_button_find">Find</button>
+        <button onclick="deletePersonEntry()" id="person_button_delete">Delete</button>
+
+    </div>
+    <div>
+        <h1>Current Entries</h1>
+        <ul id="person_entry_list"></ul>
+    </div>
+    <!--********************************************************************************************************************-->
+    <br>
+    <div>
+        <h1>Planet</h1>
+        <label for="planet_name">Name</label>
+        <input type="text" id="planet_name">
+        <br>
+        <label for="planet_climate">Climate</label>
+        <input type="text" id="planet_climate">
+        <br>
+        <button onclick="createPlanetEntry()" id="planet_button_add">Add</button>
+        <button onclick="updatePlanetEntry()" id="planet_button_update">Update</button>
+
+        <br /><br />id: &nbsp;<input type="number" style="width:50px;" id="planet_find_id" min="1" max="100">
+        <button onclick="findPlanetEntry()" id="planet_button_find">Find</button>
+        <button onclick="deletePlanetEntry()" id="planet_button_delete">Delete</button>
+
+    </div>
+    <div>
+        <h1>Current Entries</h1>
+        <ul id="planet_entry_list"></ul>
+    </div>
+    <!--********************************************************************************************************************-->
+    <br>
+    <div>
+        <h1>Starship</h1>
+        <label for="starship_name">Name</label>
+        <input type="text" id="starship_name">
+        <br>
+        <label for="starship_model">Model</label>
+        <input type="text" id="starship_model">
+        <br>
+        <button onclick="createStarshipEntry()" id="starship_button_add">Add</button>
+        <button onclick="updateStarshipEntry()" id="starship_button_update">Update</button>
+
+        <br /><br />id: &nbsp;<input type="number" style="width:50px;" id="starship_find_id" min="1" max="100">
+        <button onclick="findStarshipEntry()" id="starship_button_find">Find</button>
+        <button onclick="deleteStarshipEntry()" id="starship_button_delete">Delete</button>
+
+    </div>
+    <div>
+        <h1>Current Entries</h1>
+        <ul id="starship_entry_list"></ul>
+    </div>
+    <!--********************************************************************************************************************-->
+    <br>
+    <div id="users_div">
+        <h1>Users</h1>
+        <label for="user_username">Username</label>
+        <input type="text" id="user_username">
+        <br>
+        <label for="user_password">Password</label>
+        <input type="text" id="user_password">
+        <br>
+        <label for="user_role">Role</label>
+<!--        <input type="text" id="user_role">-->
+        <select id="user_role">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+        </select>
+        <br>
+        <button onclick="createUserEntry()" id="user_button_add">Add</button>
+        <button onclick="updateUserEntry()" id="user_button_update">Update</button>
+
+        <br /><br />id: &nbsp;<input type="number" style="width:50px;" id="user_find_id" min="1" max="100">
+        <button onclick="findUserEntry()" id="user_button_find">Find</button>
+<!--        <button onclick="deleteUserEntry()" id="user_button_delete">Delete</button>-->
+
+    </div>
+    <div id="current_entries">
+        <h1>Current Entries</h1>
+        <ul id="user_entry_list"></ul>
+    </div>
+    <!--********************************************************************************************************************-->
+
+
+</body>
 </body>
 <script>
 
+    let authHeaderValue = null;
+    let username = null;
+    let password = null;
+
+    const login = () => {
+        username = document.getElementById("username").value;
+        password = document.getElementById("password").value;
+        authHeaderValue = "Basic " + btoa(username + ":" + password);
+
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "http://localhost:8080/login/logincheck");
+        xmlHttp.setRequestHeader("Authorization", authHeaderValue);
+        xmlHttp.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                document.getElementById("lblMsg").innerHTML = "Welcome " + username + "!";
+                console.log("Login successful");
+                showLoginForm(false);
+                showUsersDiv(true);
+
+            } else if (this.readyState === XMLHttpRequest.DONE && this.status === 401) {
+                document.getElementById("lblMsg").innerHTML = "Login failed";
+                console.log("Login failed");
+                showLoginForm(true);
+            }
+        }
+        xmlHttp.send();
+    }
+
+    //BTF is boolean true or false
+    const showLoginForm = (bTF) => {
+        if (bTF) {
+            document.getElementById('frmLogin').style.visibility = 'visible';
+            //document.getElementById('frmMain').style.visibility = 'hidden';
+        } else {
+            document.getElementById('frmLogin').style.visibility = 'hidden';
+            //document.getElementById('frmMain').style.visibility = 'visible';
+        }
+    }
+
+    const showUsersDiv = (bTF) => {
+        if (bTF) {
+            document.getElementById('users_div').style.visibility = 'visible';
+            document.getElementById('current_entries').style.visibility = 'visible';
+            //document.getElementById('frmMain').style.visibility = 'hidden';
+        } else {
+            document.getElementById('users_div').style.visibility = 'hidden';
+            document.getElementById('current_entries').style.visibility = 'hidden';
+            //document.getElementById('frmMain').style.visibility = 'visible';
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function createPersonEntry() {
+        let name = document.getElementById("person_name").value;
+        let rank = document.getElementById("person_rank").value;
+        let entry = {"name": name, "rank": rank};
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/person", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry created");
+                getPersonEntries();
+            } else {
+                console.log("Error creating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function updatePersonEntry() {
+        let id = document.getElementById("person_find_id").value;
+        let name = document.getElementById("person_name").value;
+        let rank = document.getElementById("person_rank").value;
+        let entry = {"id": id, "name": name, "rank": rank};
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://localhost:8080/person/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry updated");
+                getPersonEntries();
+            } else {
+                console.log("Error updating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function findPersonEntry() {
+        console.log("findEntry method called");
+        let id = document.getElementById("person_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/person/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry found");
+                let entry = JSON.parse(this.responseText);
+                console.log("This is the entry: " + entry.id + " " + entry.name + " " + entry.rank);
+                // document.getElementById("person_id").value = entry.id;
+                document.getElementById("person_name").value = entry.name;
+                document.getElementById("person_rank").value = entry.rank;
+            } else {
+                console.log("Error finding entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function deletePersonEntry () {
+        let id = document.getElementById("person_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "http://localhost:8080/person/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry deleted");
+                getPersonEntries();
+            } else {
+                console.log("Error deleting entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function getPersonEntries() {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/person", true);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                let entries = JSON.parse(xhr.responseText);
+                renderPersonEntries(entries);
+            } else {
+                console.log("Error getting entries");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function renderPersonEntries(entries) {
+        let entry_list = document.getElementById("person_entry_list");
+        entry_list.innerHTML = "";
+        for (let entry of entries) {
+            let li = document.createElement("li");
+            li.innerHTML = entry.id + " " + entry.name + " " + entry.rank;
+            entry_list.appendChild(li);
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function createPlanetEntry() {
+        let name = document.getElementById("planet_name").value;
+        let climate = document.getElementById("planet_climate").value;
+        let entry = {"name": name, "climate": climate};
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/planet", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry created");
+                getPlanetEntries();
+            } else {
+                console.log("Error creating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function updatePlanetEntry() {
+        let id = document.getElementById("planet_find_id").value;
+        let name = document.getElementById("planet_name").value;
+        let climate = document.getElementById("planet_climate").value;
+        let entry = {"id": id, "name": name, "climate": climate};
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://localhost:8080/planet/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry updated");
+                getPlanetEntries();
+            } else {
+                console.log("Error updating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function findPlanetEntry() {
+        console.log("findEntry method called");
+        let id = document.getElementById("planet_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/planet/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry found");
+                let entry = JSON.parse(this.responseText);
+                document.getElementById("planet_name").value = entry.name;
+                document.getElementById("planet_climate").value = entry.climate;
+            } else {
+                console.log("Error finding entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function deletePlanetEntry () {
+        let id = document.getElementById("planet_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "http://localhost:8080/planet/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry deleted");
+                getPlanetEntries();
+            } else {
+                console.log("Error deleting entry");
+            }
+        }
+    }
+
+    function getPlanetEntries() {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/planet", true);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                let entries = JSON.parse(xhr.responseText);
+                renderPlanetEntries(entries);
+            } else {
+                console.log("Error getting entries");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function renderPlanetEntries(entries) {
+        let entry_list = document.getElementById("planet_entry_list");
+        entry_list.innerHTML = "";
+        for (let entry of entries) {
+            let li = document.createElement("li");
+            li.innerHTML = entry.id + " " + entry.name + " " + entry.climate;
+            entry_list.appendChild(li);
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function createStarshipEntry() {
+        let name = document.getElementById("starship_name").value;
+        let model = document.getElementById("starship_model").value;
+        let entry = {"name": name, "modelType": model};
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/starship", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry created");
+                getStarshipEntries();
+            } else {
+                console.log("Error creating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function updateStarshipEntry() {
+        let id = document.getElementById("starship_find_id").value;
+        let name = document.getElementById("starship_name").value;
+        let model = document.getElementById("starship_model").value;
+        let entry = {"id": id, "name": name, "modelType": model};
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://localhost:8080/starship/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry updated");
+                getStarshipEntries();
+            } else {
+                console.log("Error updating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function findStarshipEntry() {
+        console.log("findEntry method called");
+        let id = document.getElementById("starship_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/starship/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry found");
+                let entry = JSON.parse(this.responseText);
+                document.getElementById("starship_name").value = entry.name;
+                document.getElementById("starship_model").value = entry.modelType;
+            } else {
+                console.log("Error finding entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function deleteStarshipEntry () {
+        let id = document.getElementById("starship_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "http://localhost:8080/starship/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry deleted");
+                getStarshipEntries();
+            } else {
+                console.log("Error deleting entry");
+            }
+        }
+    }
+
+    function getStarshipEntries() {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/starship", true);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                let entries = JSON.parse(xhr.responseText);
+                renderStarshipEntries(entries);
+            } else {
+                console.log("Error getting entries");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function renderStarshipEntries(entries) {
+        let entry_list = document.getElementById("starship_entry_list");
+        entry_list.innerHTML = "";
+        for (let entry of entries) {
+            let li = document.createElement("li");
+            li.innerHTML = entry.id + " " + entry.name + " " + entry.modelType;
+            entry_list.appendChild(li);
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function createUserEntry() {
+        let username = document.getElementById("user_username").value;
+        let password = document.getElementById("user_password").value;
+        let role = document.getElementById("user_role").value;
+        let entry = {"username": username, "password": password, "role": role};
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/user/create", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry created");
+                getUserEntries();
+            } else {
+                console.log("Error creating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function updateUserEntry() {
+        let id = document.getElementById("user_find_id").value;
+        let username = document.getElementById("user_username").value;
+        let password = document.getElementById("user_password").value;
+        let role = document.getElementById("user_role").value;
+        let entry = {"id": id, "username": username, "password": password, "role": role};
+        let xhr = new XMLHttpRequest();
+        xhr.open("PUT", "http://localhost:8080/user/update" , true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send(JSON.stringify(entry));
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry updated");
+                getUserEntries();
+            } else {
+                console.log("Error updating entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function findUserEntry() {
+        console.log("findEntry method called");
+        let id = document.getElementById("user_find_id").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/user/" + id, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log("Entry found");
+                let entry = JSON.parse(this.responseText);
+                document.getElementById("user_username").value = entry.username;
+                document.getElementById("user_password").value = entry.password;
+                document.getElementById("user_role").value = entry.role;
+            } else {
+                console.log("Error finding entry");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    // function deleteUserEntry () {
+    //     let id = document.getElementById("user_find_id").value;
+    //     let username = document.getElementById("user_username").value;
+    //     let xhr = new XMLHttpRequest();
+    //     xhr.open("DELETE", "http://localhost:8080/user/delete/" + username + id, true);
+    //     xhr.setRequestHeader('Content-Type', 'application/json');
+    //     xhr.setRequestHeader("Authorization", authHeaderValue);
+    //     xhr.send();
+    //     xhr.onload = function () {
+    //         if (xhr.status === 200) {
+    //             console.log("Entry deleted");
+    //             getUserEntries();
+    //         } else {
+    //             console.log("Error deleting entry");
+    //         }
+    //     }
+    // }
+
+    function getUserEntries() {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/user", true);
+        xhr.setRequestHeader("Authorization", authHeaderValue);
+        xhr.send();
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                let entries = JSON.parse(xhr.responseText);
+                renderUserEntries(entries);
+            } else {
+                console.log("Error getting entries");
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    function renderUserEntries(entries) {
+        let entry_list = document.getElementById("user_entry_list");
+        entry_list.innerHTML = "";
+        for (let entry of entries) {
+            let li = document.createElement("li");
+            li.innerHTML = entry.id + " " + entry.username + " " + entry.password + " " + entry.role;
+            entry_list.appendChild(li);
+        }
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+    window.onload = function() {
+        console.log("page loading");
+        showLoginForm(true);
+        showUsersDiv(false);
+        getPersonEntries();
+        getPlanetEntries();
+        getStarshipEntries();
+        getUserEntries();
+
+    }
+
 </script>
-<style>
-    ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background-color: #333;
-    }
+<!--<style>-->
+<!--    ul {-->
+<!--        list-style-type: none;-->
+<!--        margin: 0;-->
+<!--        padding: 0;-->
+<!--        overflow: hidden;-->
+<!--        background-color: #333;-->
+<!--    }-->
 
-    li {
-        float: left;
-    }
+<!--    li {-->
+<!--        float: left;-->
+<!--    }-->
 
-    li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-    }
+<!--    li a {-->
+<!--        display: block;-->
+<!--        color: white;-->
+<!--        text-align: center;-->
+<!--        padding: 14px 16px;-->
+<!--        text-decoration: none;-->
+<!--    }-->
 
-    li a:hover {
-        background-color: #111;
-    }
-</style>
+<!--    li a:hover {-->
+<!--        background-color: #111;-->
+<!--    }-->
+<!--</style>-->
 </html>

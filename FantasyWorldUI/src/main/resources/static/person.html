@@ -32,6 +32,8 @@
     <h1>Current Entries</h1>
     <ul id="entry_list"></ul>
 </div>
+
+
 </body>
 <script>
     function createEntry() {
@@ -146,6 +148,20 @@
         }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
+
+        function storage(){
+        //local storage styas on local machine until deleted with localstorage.removeItem{"stuff")
+        //session storage is deleted when browser is closed
+        //local storage is good for user preferences
+        //session storage is good for shopping carts
+            localStorage.setItem("stuff", document.getElementById("txtStoreMe").value);
+            document.getElementById("lblStorage").value = localStorage.getItem("stuff");
+
+            //seesion
+            sessionStorage.setItem("stuff", document.getElementById("txtStoreMe").value);
+            document.getElementById("lblStorage").innerHTML = sessionStorage.stuff;
+            // lblStorage.value = sessionStorage.stuff;// note the 2nd way to fill a lablel
+        }
 
 
 </script>

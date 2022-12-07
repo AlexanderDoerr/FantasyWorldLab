@@ -3,30 +3,23 @@ package doerr.alex.fantasyworldapi.controller;
 
 
 import doerr.alex.fantasyworldapi.model.Person;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("")
+@CrossOrigin
+@RequestMapping("/login")
 public class FantasyWorldController {
 
-    @RequestMapping("/one" )
-    public String hello(){
-        //this is how I can have it print my error message to the page.
-//        Person p = new Person();
-//        try {
-//            p.setId(-1);
-//            p.setName("");
-//            p.setRank("fasd");
-//        } catch (Exception e) {
-//            return e.getMessage();
-//        }
+    @Autowired
+    public InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
-        return "Hello from the test page 1";
-    }
+    @GetMapping("/logincheck")
+    public String loginCheck(){
 
-    @RequestMapping("/two")
-    public String hello2(){
-        return "Hello from the test page 2";
+        return "You are now logged in!";
+
     }
+    
 }

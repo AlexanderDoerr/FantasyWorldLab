@@ -4,6 +4,7 @@ import doerr.alex.fantasyworldapi.BLL.PersonBLL;
 import doerr.alex.fantasyworldapi.model.Person;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -13,7 +14,9 @@ public class PersonController {
     private PersonBLL pb = new PersonBLL();
 
     @RequestMapping(path="", method= RequestMethod.POST)
-    public void createPerson(@RequestBody Person person) {
+    public void createPerson(HttpServletResponse response, @RequestBody Person person) {
+//        response.addHeader("Access-Control-Allow-Origin", "*");
+//        response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         pb.createPerson(person);
     }
 
